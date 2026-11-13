@@ -34,6 +34,8 @@ from fefw_layer import (GRADES, ITEM_KINDS, SKILL_NAMES, SKILL_THRESHOLDS,  # no
                         item_kind, item_label, job_ids, job_name, next_threshold, pick_live)
 import fefw_layer as layer  # noqa: E402
 import supports  # noqa: E402  (support pair chart + conversation flags)
+from i18n_zh_cn import install as _install_zh_cn, tr as _tr_zh_cn  # noqa: E402
+_install_zh_cn()
 import fefw_core as core  # noqa: E402  (save object tree: resizing edits)
 from editor_advanced import AdvancedMixin  # noqa: E402  (Player / Classes / Flags pages)
 
@@ -125,7 +127,7 @@ class SearchEntry(ttk.Entry):
     def __init__(self, master, placeholder: str, on_change, delay: int = 140, **kw):
         self._var = tk.StringVar()
         super().__init__(master, textvariable=self._var, **kw)
-        self._ph = placeholder
+        self._ph = _tr_zh_cn(placeholder)
         self._on_change = on_change
         self._delay = delay
         self._job = None
@@ -795,7 +797,7 @@ class App(AdvancedMixin, tk.Tk):
         for iid, meta in item_ids().items():
             en = item_label(iid, meta)
             jp = meta.get("jp") or ""
-            blob = f"{en} {jp} {iid:08x}".lower()
+            blob = f"{en} {meta.get('en', '')} {jp} {iid:08x}".lower()
             rows.append((iid, meta, en, jp, item_kind(meta), item_category(meta),
                          is_shadow(meta), blob))
         rows.sort(key=lambda r: (r[2].lower(), r[0]))

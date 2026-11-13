@@ -16,6 +16,7 @@ import os
 import struct
 
 import fefw_core as core
+import zh_cn_names as zh_names
 from fefw_save import *                      # noqa: F401,F403  (ids, labels, catalogue…)
 from fefw_save import (                      # noqa: F401
     Convoy, ConvoyRow, SaveError, SaveFile as _SaveFile, UnitRecord as _UnitRecord,
@@ -28,6 +29,8 @@ from fefw_save import (                      # noqa: F401
 def _meta(person: int) -> dict:
     meta = unit_ids().get(person & 0xFFFFFFFF)
     if meta:
+        meta = dict(meta)
+        meta["name"] = zh_names.unit_name(meta)
         return meta
     return {"pid": "PID_%08X" % (person & 0xFFFFFFFF),
             "name": "unknown 0x%08X" % (person & 0xFFFFFFFF),
@@ -206,14 +209,14 @@ def _skills() -> dict:
 
 
 def skill_label(sid: int) -> str:
-    """English name, else the game's own Japanese name, else the id."""
+    """Simplified Chinese display label; source identifiers remain unchanged."""
     meta = item_ids().get(sid & 0xFFFFFFFF)
     if meta:
         return item_label(sid, meta)
     s = _skills().get(sid & 0xFFFFFFFF)
     if s:
-        return s.get("en") or s.get("jp") or s.get("sid")
-    return "0x%08X" % (sid & 0xFFFFFFFF)
+        return zh_names.skill_name(s)
+    return "未知技能 %08X" % (sid & 0xFFFFFFFF)
 
 
 # --------------------------------------------------------------------------

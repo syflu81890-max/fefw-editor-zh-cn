@@ -1291,7 +1291,7 @@ def add_skill(self, index: int):
     if not self.sv or self.uid is None:
         return
     # every entry in these lists is a skill / combat art id (SID_…), never an item
-    rows = [(h, m.get("en") or m.get("jp") or m.get("sid"), m.get("sid", ""))
+    rows = [(h, layer.skill_label(int(h, 16)), m.get("sid", ""))
             for h, m in layer._skills().items()
             if not (m.get("sid") or "").startswith("SID_>") and (m.get("en") or m.get("jp"))]
     # skills with an English name first; internal / enemy-only entries after
