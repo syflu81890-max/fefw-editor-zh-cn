@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """简体中文资料库显示名。只负责 UI 显示，不参与任何存档 ID / 哈希写入。"""
 import re
+import unicodedata
 ITEMS = {
   "None (empty slot)": "空槽",
   "Wooden Sword": "木剑",
@@ -495,14 +496,14 @@ CLASSES.update({
 })
 
 def _clean(s):
-    return re.sub(r"\\s*\\+\\s*\\d+$", "", str(s or "")).strip()
+    return re.sub(r"\s*\+\s*\d+$", "", unicodedata.normalize("NFKC", str(s or ""))).strip()
 
 def item_name(meta):
     en = _clean(meta.get("en"))
     jp = _clean(meta.get("jp"))
     base = ITEMS.get(en) or JP_ITEMS.get(jp) or ITEMS.get(jp)
     if base:
-        m = re.search(r"\\+(\\d+)$", str(meta.get("jp") or ""))
+        m = re.search(r"\+(\d+)$", unicodedata.normalize("NFKC", str(meta.get("jp") or "")))
         return base + (" +" + m.group(1) if m else "")
     # 未收录词条宁可显示英文，也不把日文原名直接塞进中文界面
     return en or jp or "未知道具"
