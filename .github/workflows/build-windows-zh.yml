@@ -1,0 +1,51 @@
+name: Build Chinese Windows
+
+on:
+  push:
+    branches: ["zh-cn-v1.3.2"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install -r requirements.txt pyinstaller==6.11.1
+      - name: Check Python syntax
+        run: python -m py_compile editor.py editor_advanced.py i18n_zh_cn.py fefw_core.py fefw_layer.py fefw_save.py supports.py
+      - name: Check data files
+        run: >-
+          python -c "import fefw_layer as lay, fefw_core as c, editor_advanced as a, supports;
+          assert lay.item_ids() and lay.unit_ids() and lay.job_ids() and supports.pairs()
+          and a.flag_names() and c.id_hash('支援会话_アレキサンドラ_カイ_C')
+          and len(supports.point_pairs()) == 2628 and supports.max_points() == 3200"
+      - name: Build exe
+        run: >
+          pyinstaller --noconfirm --onefile --windowed --name "FEFW Save Editor"
+          --add-data "unit_ids.json;." --add-data "item_ids.json;." --add-data "job_ids.json;."
+          --add-data "supports.json;." --add-data "support_points.json;."
+          --add-data "flag_names.json;." --add-data "skill_ids.json;."
+          editor.py
+      - name: Package
+        shell: pwsh
+        run: |
+          $stage = "stage/FEFW-Save-Editor-zh-CN"
+          New-Item -ItemType Directory -Force "$stage/icons/items", "$stage/icons/units" | Out-Null
+          Copy-Item "dist/FEFW Save Editor.exe", README_zh-CN.md -Destination $stage
+          Copy-Item icons/README.md -Destination "$stage/icons"
+          Copy-Item icons/items/.gitkeep -Destination "$stage/icons/items"
+          Copy-Item icons/units/.gitkeep -Destination "$stage/icons/units"
+          Compress-Archive -Path "$stage/*" -DestinationPath "FEFW-Save-Editor-zh-CN-windows.zip"
+      - uses: actions/upload-artifact@v6
+        with:
+          name: FEFW-Save-Editor-zh-CN-windows
+          path: FEFW-Save-Editor-zh-CN-windows.zip
+          if-no-files-found: error
+          retention-days: 30
