@@ -797,7 +797,7 @@ class App(AdvancedMixin, tk.Tk):
         for iid, meta in item_ids().items():
             en = item_label(iid, meta)
             jp = meta.get("jp") or ""
-            blob = f"{en} {jp} {iid:08x}".lower()
+            blob = f"{en} {meta.get('en', '')} {jp} {iid:08x}".lower()
             rows.append((iid, meta, en, jp, item_kind(meta), item_category(meta),
                          is_shadow(meta), blob))
         rows.sort(key=lambda r: (r[2].lower(), r[0]))
