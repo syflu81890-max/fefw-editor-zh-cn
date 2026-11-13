@@ -506,14 +506,14 @@ def item_name(meta):
         m = re.search(r"\+(\d+)$", unicodedata.normalize("NFKC", str(meta.get("jp") or "")))
         return base + (" +" + m.group(1) if m else "")
     # 未收录词条宁可显示英文，也不把日文原名直接塞进中文界面
-    return en or jp or "未知道具"
+    return en if en and not re.search(r"[\\u3040-\\u30ff\\u3400-\\u9fff]", en) else "未翻译道具"
 
 def class_name(meta):
     en = _clean(meta.get("en"))
     jp = str(meta.get("jp") or "").replace("JID_", "")
     dismounted = en.endswith(" (dismounted)")
     base = en[:-len(" (dismounted)")] if dismounted else en
-    translated = CLASSES.get(en) or CLASSES.get(base) or CLASSES.get(jp) or en or jp or "未知兵种"
+    translated = CLASSES.get(en) or CLASSES.get(base) or CLASSES.get(jp) or en or "未知兵种"
     return translated + "（下马）" if dismounted else translated
 
 CHARACTERS.update({
@@ -614,7 +614,7 @@ CHARACTERS.update({
 
 def unit_name(meta):
     name = str(meta.get("name") or "")
-    return CHARACTERS.get(name) or name or str(meta.get("pid") or "未知角色")
+    return CHARACTERS.get(name) or (name if name and not re.search(r"[\\u3040-\\u30ff\\u3400-\\u9fff]", name) else "未翻译角色")
 
 def skill_name(meta):
     en = str(meta.get("en") or "").strip()
@@ -627,4 +627,4 @@ def skill_name(meta):
             en = en.replace(a,b)
         return en
     # 保留无法可靠翻译的技能英文名，避免显示日文
-    return "未命名技能"
+    return "未翻译技能"
