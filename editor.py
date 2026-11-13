@@ -34,6 +34,8 @@ from fefw_layer import (GRADES, ITEM_KINDS, SKILL_NAMES, SKILL_THRESHOLDS,  # no
                         item_kind, item_label, job_ids, job_name, next_threshold, pick_live)
 import fefw_layer as layer  # noqa: E402
 import supports  # noqa: E402  (support pair chart + conversation flags)
+from i18n_zh_cn import install as _install_zh_cn  # noqa: E402
+_install_zh_cn()
 import fefw_core as core  # noqa: E402  (save object tree: resizing edits)
 from editor_advanced import AdvancedMixin  # noqa: E402  (Player / Classes / Flags pages)
 
