@@ -257,6 +257,76 @@ SKILL_TERMS = {
   "戦技": "战技"
 }
 
+CLASSES.update({
+    "Charioteer": "战车兵",
+    "Shido": "侍道",
+    "Dreadnought": "巴伊波·卡哈",
+    "Ovate": "先知",
+    "Bardinger": "游唱诗人",
+    "Cataphract": "铁甲骑兵",
+    "Troubadour": "游唱诗人",
+    "Caladrius": "神鸵兵",
+    "Dragoon": "驭龙兵",
+    "Elephant Rider": "战象兵",
+    "Swordmaster": "刀剑将领",
+    "Bow Adept": "宗师射手",
+    "Sentinel": "卫士",
+    "High Savant": "高阶墓志铭",
+    "Bow Knight": "弓骑士",
+    "Shadow Seeker": "探影者",
+    "Battlemaster": "战斗将领",
+    "Castle Knight": "要塞",
+    "War Monk": "武僧",
+    "Wiseman": "贤士",
+    "Awakened": "觉者",
+    "Orichaldia": "奥利哈铁骑",
+    "Seere": "系尔",
+    "Valkyrium": "瓦尔基里姆",
+    "Badhbh Cath": "刃辉神将",
+    "Celestial Trooper": "圣天翼兵",
+    "Bau Lord": "破拳神将",
+    "The Blade": "刃辉神将",
+    "The Calamity": "绝祸神将",
+    "The Trident": "岚枪神将",
+    "The Apsara": "神乐神将",
+    "The Eternal": "圣转神将",
+    "The Godhand": "永霸神将",
+    "The Avatar": "烈骏神将",
+    "The Cavalier": "烈骏神将",
+    "Kusarik": "库沙里克",
+    "Sand Boar": "沙猪",
+    "Yarc": "亚库",
+    "Blight Louse": "潮虫",
+    "Sandbael": "沙之主",
+    "Striped Wolf": "竖纹狼",
+    "Vouivre": "飞蜥",
+    "Sea Beast": "海兽",
+    "Atlas Bear": "亚特拉斯熊",
+    "Minor Atlas Bear": "小型亚特拉斯熊",
+    "Sandworm": "沙虫",
+    "Giant": "巨人",
+    "Lesser Titanus": "小型泰塔尼斯",
+    "Greater Titanus": "大型泰塔尼斯",
+    "Golem": "魔像",
+    "Cetus": "克托斯",
+    "Digamma": "迪甘玛",
+    "Pentkehydra": "五头·修德拉",
+    "Rukh": "鲁弗",
+    "Harpyia": "魔鸟哈尔皮亚",
+    "Living Armor": "铠甲兵",
+    "The Skyblotter": "暗空覆穹者",
+    "The Brandisher": "率众征战者",
+    "The Beckoner": "引路者",
+    "Flesh Pod": "肉之茧",
+    "Demonic Beast": "魔兽",
+    "Skellion": "骷髅",
+    "Mummy": "木乃伊",
+    "Necrodragon": "龙僵尸",
+    "Shade": "影",
+    "Underworld Pillar": "冥界之柱",
+    "The Darkest Dark": "晦冥逾深渊者",
+})
+
 def _clean(s):
     return re.sub(r"\\s*\\+\\s*\\d+$", "", str(s or "")).strip()
 
@@ -273,7 +343,10 @@ def item_name(meta):
 def class_name(meta):
     en = _clean(meta.get("en"))
     jp = str(meta.get("jp") or "").replace("JID_", "")
-    return CLASSES.get(en) or CLASSES.get(jp) or en or jp or "未知兵种"
+    dismounted = en.endswith(" (dismounted)")
+    base = en[:-14] if dismounted else en
+    translated = CLASSES.get(en) or CLASSES.get(base) or CLASSES.get(jp) or en or jp or "未知兵种"
+    return translated + "（下马）" if dismounted else translated
 
 def unit_name(meta):
     name = str(meta.get("name") or "")
