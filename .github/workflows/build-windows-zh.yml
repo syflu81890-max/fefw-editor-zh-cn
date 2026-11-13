@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt pyinstaller==6.11.1
       - name: Check Python syntax
-        run: python -m py_compile editor.py editor_advanced.py i18n_zh_cn.py fefw_core.py fefw_layer.py fefw_save.py supports.py
+        run: python -m py_compile editor.py editor_advanced.py i18n_zh_cn.py fefw_core.py fefw_layer.py fefw_save.py supports.py zh_cn_names.py
       - name: Check data files
         run: >-
           python -c "import fefw_layer as lay, fefw_core as c, editor_advanced as a, supports;
