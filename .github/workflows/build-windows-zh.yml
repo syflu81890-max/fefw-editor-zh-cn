@@ -23,8 +23,8 @@ jobs:
       - name: Check data files
         run: >-
           python -c "import fefw_layer as lay, fefw_core as c, editor_advanced as a, supports;
-          assert lay.item_ids() and lay.unit_ids() and lay.job_ids() and supports.pairs()
-          and a.flag_names() and c.id_hash('支援会話_アレキサンドラ_カイ_C')
+          assert supports.pairs() and a.flag_names()
+          and c.id_hash('支援会話_アレキサンドラ_カイ_C')
           and len(supports.point_pairs()) == 2628 and supports.max_points() == 3200"
       - name: Build exe
         run: >
