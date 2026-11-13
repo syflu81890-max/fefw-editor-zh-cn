@@ -44,6 +44,7 @@ import sys
 import unicodedata
 
 import zstandard
+import zh_cn_names as zh_names
 
 MAGIC = 0xCDEFBCDD
 HDR_FNV_START = 0x1F
@@ -95,7 +96,7 @@ def job_name(value: int) -> str:
     meta = job_ids().get(value)
     if not meta:
         return f"unknown class {value:08x}"
-    return meta.get("en") or meta.get("jp") or f"class {value:08x}"
+    return zh_names.class_name(meta)
 
 
 # --------------------------------------------------------------------------
@@ -1024,26 +1025,11 @@ def item_kind(meta: dict) -> str:
 
 
 def item_label(iid: int, meta: dict | None = None) -> str:
-    """English name, with the forge level (+1, +2…) the Japanese name carries.
-
-    Many English names drop it, so "Silver Axe" would otherwise appear four
-    times in a list with nothing to tell the copies apart.
-    """
+    """Simplified Chinese display label; source IDs and names remain untouched."""
     meta = item_ids().get(iid) if meta is None else meta
     if not meta:
-        return f"unknown item {iid:08x}"
-    en = unicodedata.normalize("NFKC", meta.get("en") or "").strip()
-    jp = unicodedata.normalize("NFKC", meta.get("jp") or "").strip()
-    m = re.search(r"\+(\d+)$", jp)
-    base_jp = jp[:m.start()] if m else jp
-    # forged copies take the base item's name, so "+1…+5" line up with it, and
-    # half-translated names ("Poison 剣+1", "疾風 Sword") borrow a clean one
-    if base_jp in _clean_names() and (m or not en or _CJK.search(en)):
-        en = _clean_names()[base_jp]
-    if not en:
-        return jp or f"item {iid:08x}"
-    en = re.sub(r"\s*\+\s*\d+$", "", en)
-    return f"{en} +{m.group(1)}" if m else en
+        return f"未知道具 {iid:08x}"
+    return zh_names.item_name(meta)
 
 
 _CJK = re.compile(r"[\u3040-\u30ff\u3400-\u9fff]")
