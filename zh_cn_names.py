@@ -506,7 +506,7 @@ def item_name(meta):
         m = re.search(r"\+(\d+)$", unicodedata.normalize("NFKC", str(meta.get("jp") or "")))
         return base + (" +" + m.group(1) if m else "")
     # 未收录词条宁可显示英文，也不把日文原名直接塞进中文界面
-    return en if en and not re.search(r"[\\u3040-\\u30ff\\u3400-\\u9fff]", en) else "未翻译道具"
+    return en if en and not re.search(r"[\u3040-\u30ff\u3400-\u9fff]", en) else "未翻译道具"
 
 def class_name(meta):
     en = _clean(meta.get("en"))
@@ -614,7 +614,7 @@ CHARACTERS.update({
 
 def unit_name(meta):
     name = str(meta.get("name") or "")
-    return CHARACTERS.get(name) or (name if name and not re.search(r"[\\u3040-\\u30ff\\u3400-\\u9fff]", name) else "未翻译角色")
+    return CHARACTERS.get(name) or (name if name and not re.search(r"[\u3040-\u30ff\u3400-\u9fff]", name) else "未翻译角色")
 
 def skill_name(meta):
     en = str(meta.get("en") or "").strip()
