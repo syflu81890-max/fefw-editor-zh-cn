@@ -344,7 +344,7 @@ def class_name(meta):
     en = _clean(meta.get("en"))
     jp = str(meta.get("jp") or "").replace("JID_", "")
     dismounted = en.endswith(" (dismounted)")
-    base = en[:-14] if dismounted else en
+    base = en[:-len(" (dismounted)")] if dismounted else en
     translated = CLASSES.get(en) or CLASSES.get(base) or CLASSES.get(jp) or en or jp or "未知兵种"
     return translated + "（下马）" if dismounted else translated
 
