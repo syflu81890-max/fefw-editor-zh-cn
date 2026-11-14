@@ -628,3 +628,195 @@ def skill_name(meta):
         return en
     # 保留无法可靠翻译的技能英文名，避免显示日文
     return "未翻译技能"
+
+
+# ---------------------------------------------------------------------------
+# Complete-catalogue fallback (1.3.4 zh-CN)
+# Every catalogue entry must have a visible Chinese label. Existing curated
+# translations above always take priority; unknown proper nouns are transliterated.
+# ---------------------------------------------------------------------------
+_WORD_ZH = {
+    "wooden":"木制","bronze":"青铜","iron":"铁","silver":"银","gold":"黄金",
+    "steel":"钢","sword":"剑","swords":"剑","blade":"刃","edge":"刃","greatsword":"大剑",
+    "spear":"枪","lance":"枪","trident":"三叉戟","short":"短","long":"长","bow":"弓",
+    "war":"战","battle":"战斗","axe":"斧","shield":"盾","staff":"杖","tome":"魔导书",
+    "knife":"刀","dagger":"匕首","gauntlet":"手甲","glove":"手套","ring":"戒指",
+    "amulet":"护符","charm":"护身符","necklace":"项链","earring":"耳环","bracelet":"手镯",
+    "armor":"铠甲","armour":"铠甲","helmet":"头盔","boots":"靴子","clothes":"服装",
+    "robe":"长袍","coat":"外套","cloak":"斗篷","hat":"帽子","cap":"帽子",
+    "potion":"药剂","medicine":"药","herb":"草药","water":"水","fire":"火焰",
+    "thunder":"雷电","wind":"风","ice":"冰","frost":"寒冰","light":"光","dark":"暗",
+    "magic":"魔法","holy":"圣","divine":"神圣","demon":"恶魔","dragon":"龙",
+    "beast":"野兽","monster":"魔物","ghost":"幽灵","spirit":"精灵","soul":"灵魂",
+    "stone":"石","gem":"宝石","jewel":"宝石","crystal":"水晶","ore":"矿石",
+    "wood":"木材","cloth":"布料","leather":"皮革","thread":"线","threaded":"编织",
+    "fish":"鱼","meat":"肉","fruit":"果实","vegetable":"蔬菜","mushroom":"蘑菇",
+    "seed":"种子","flower":"花","leaf":"叶","grass":"草","root":"根",
+    "cooking":"料理","cook":"烹饪","food":"食物","meal":"餐食","set":"套装",
+    "kit":"工具组","tool":"工具","tools":"工具","equipment":"装备","weapon":"武器",
+    "crate":"箱","box":"箱","chest":"宝箱","key":"钥匙","map":"地图","letter":"信件",
+    "book":"之书","scroll":"卷轴","document":"文件","note":"笔记","diary":"日记",
+    "license":"许可证","ticket":"票券","token":"代币","coin":"硬币","medal":"徽章",
+    "badge":"徽章","crest":"纹章","emblem":"徽记","fragment":"碎片","piece":"碎片",
+    "shard":"碎片","dust":"粉尘","powder":"粉末","ash":"灰烬","salt":"盐",
+    "oil":"油","sauce":"酱汁","soup":"汤","bread":"面包","cake":"蛋糕",
+    "sweet":"甜点","candy":"糖果","tea":"茶","wine":"酒","ale":"麦酒",
+    "red":"红色","blue":"蓝色","green":"绿色","black":"黑色","white":"白色",
+    "yellow":"黄色","purple":"紫色","pink":"粉色","orange":"橙色","brown":"棕色",
+    "dark":"暗","bright":"耀眼","ancient":"古代","old":"旧","new":"新",
+    "rare":"稀有","simple":"简易","basic":"基础","advanced":"高级","highest":"最高级",
+    "strong":"强力","heavy":"重型","lightweight":"轻型","large":"大型","small":"小型",
+    "minor":"小型","greater":"大型","lesser":"小型","giant":"巨型","giants":"巨人",
+    "windfire":"风火","storm":"风暴","stormy":"暴风","rain":"雨","snow":"雪",
+    "summer":"夏日","winter":"冬日","spring":"春日","autumn":"秋日",
+    "redhead":"红发","eastern":"东方","western":"西方","northern":"北方","southern":"南方",
+    "decorative":"装饰","ornamental":"装饰","crafting":"制作","knives":"小刀",
+    "dyed":"染色","towel":"毛巾","collection":"收藏","games":"游戏","present":"礼物",
+    "box":"箱","prototype":"原型","part":"部件","effect":"效果","physical":"物理",
+    "attack":"攻击","defense":"防御","silvered":"镀银","poison":"毒","venom":"剧毒",
+    "killing":"必杀","hunter":"猎人","rider":"骑兵","riders":"骑兵","slayer":"杀手",
+    "bane":"克星","killer":"杀手","breaker":"破坏者","piercer":"穿刺者",
+    "compass":"罗盘","turret":"炮台","cannon":"火炮","arrow":"箭","arrows":"箭矢",
+    "ornamental":"装饰","hakuren":"白莲","bakul":"巴库尔","cadam":"卡达姆",
+    "wun":"温","solom":"索洛姆","zang":"赞格","haksan":"哈克桑",
+    "cal ednisgaa":"卡莱德尼斯加","cal ednisgaa":"卡莱德尼斯加",
+    "hakuren":"白莲","melt":"熔","slender":"纤细","outdoor":"户外",
+    "simple":"简易","gala":"加拉","merlin":"梅林","ginji":"银次",
+    "stomping":"践踏","combat":"战斗","black":"黑色","pearl":"珍珠",
+    "tortates":"托尔塔特斯","loach":"泥鳅","wander":"流浪","zephyrus":"西风",
+    "secret":"秘密","sol":"索尔","hakuren":"白莲","highest":"最高级",
+    "man":"男子","woman":"女子","female":"女性","male":"男性","citizen":"居民",
+    "soldier":"士兵","knight":"骑士","monk":"僧兵","priest":"牧师",
+    "archer":"弓箭手","swordsman":"剑士","thief":"盗贼","brigand":"山贼",
+    "rogue":"恶棍","dancer":"舞者","blacksmith":"铁匠","armorer":"铠甲匠",
+    "reception":"接待员","receptionist":"接待员","audience":"觐见",
+    "companion":"同伴","bride":"新娘","king":"国王","queen":"女王",
+    "skeleton":"骷髅","ghost":"幽灵","white":"白色","egg":"蛋","risen":"复生",
+    "dead":"亡者","shade":"影","underworld":"冥界","fire":"火焰",
+    "diviner":"占卜师","wind":"风","axe":"斧","poison":"毒","weak":"弱",
+    "medium":"中等","extra":"额外","schemer":"谋士","prologue":"序章",
+    "alliance":"同盟","antiquity":"古代","arena":"竞技场","reception":"接待",
+    "aragonian":"阿拉贡","balor":"巴洛尔","castor":"卡斯托尔",
+    "maria":"玛丽亚","baozi":"包子","tsuze":"图泽","buccar":"布卡尔",
+    "jester":"弄臣","centurio":"森图里奥","head hunter":"猎头者",
+    "sandworm":"沙虫","sandbael":"沙贝尔","talimun":"塔利蒙",
+    "bahr":"巴尔","vahn":"范","zakuani":"扎库阿尼","idi":"伊迪",
+    "bjor":"比约尔","karina":"卡丽娜","anna":"安娜","arago":"阿拉戈",
+    "aswan":"亚丝望","vandahl":"范达尔","bertrand":"贝特兰",
+    "balboa":"巴尔博亚","breza":"布雷扎","canute":"克努特",
+    "chiara":"基娅拉","cohen":"科恩","dagda":"达格达",
+    "drake":"德雷克","esmeralda":"艾丝梅拉尔达","fianna":"绯亚娜",
+    "fortuna":"芙托娜","gabriel":"加百列","gervasio":"杰尔瓦西奥",
+    "gladius":"格拉迪乌斯","gyatal":"贾塔尔","halvin":"哈尔温",
+    "hanno":"哈诺","hedda":"赫达","huver":"胡弗","ultand":"乌尔坦德",
+    "klapka":"克拉普卡","lilian":"莉利安","loretta":"罗蕾塔",
+    "lysander":"莱桑达","mahadu":"马哈马杜","mars":"马兹",
+    "maxim":"马克西姆","nathan":"内森","nuzzuo":"努佐",
+    "olympia":"奥琳琵娅","tobias":"托比亚斯","troy":"特洛伊",
+    "lind":"林德","llewellyn":"卢埃林","katarina":"卡塔琳娜",
+    "orchel":"欧露赫露","randa":"兰达","nasshim":"纳希姆",
+    "nomved":"诺姆维德","oktar":"奥克塔尔","pep​​pe":"佩佩",
+    "roxana":"罗克珊娜","yangjie":"杨界","zhakone":"札可捏"
+};
+
+function _phoneticWord(word) {
+    const w = String(word || "").toLowerCase().replace(/[^a-z]/g, "");
+    if (!w) return "";
+    if (_WORD_ZH[w]) return _WORD_ZH[w];
+    const chunks = [
+      ["tion","申"],["sion","申"],["ough","奥"],["eigh","埃"],["sch","施"],
+      ["ch","奇"],["sh","什"],["th","斯"],["ph","菲"],["ck","克"],["qu","夸"],
+      ["ee","伊"],["ea","伊"],["oo","乌"],["ou","欧"],["ow","奥"],["ai","艾"],
+      ["ay","艾"],["au","奥"],["oi","奥伊"],["oy","奥伊"],["ie","伊"],
+      ["igh","艾"],["wr","拉"],["kn","克"],["wh","沃"],["x","克斯"],
+      ["a","阿"],["e","埃"],["i","伊"],["o","奥"],["u","乌"],
+      ["b","布"],["c","克"],["d","德"],["f","弗"],["g","格"],["h","赫"],
+      ["j","杰"],["k","克"],["l","尔"],["m","姆"],["n","恩"],["p","普"],
+      ["r","尔"],["s","斯"],["t","特"],["v","维"],["w","沃"],["y","伊"],["z","兹"]
+    ];
+    let out = "", i = 0;
+    while (i < w.length) {
+        let found = false;
+        for (const [src,dst] of chunks) {
+            if (w.startsWith(src,i)) { out += dst; i += src.length; found = true; break; }
+        }
+        if (!found) i++;
+    }
+    return out || "未知";
+}
+
+function _translatePhrase(value, properNoun=false) {
+    let s = String(value || "").normalize("NFKC").trim();
+    if (!s) return "";
+    s = s.replace(/^H[_\s]+/i, "").replace(/^JID_/, "").replace(/^EN_/, "");
+    s = s.replace(/[_]+/g, " ").replace(/\s+/g, " ").trim();
+    const suffix = s.match(/\s*\+(\d+)$/);
+    const plus = suffix ? " +" + suffix[1] : "";
+    if (suffix) s = s.slice(0, suffix.index).trim();
+    const parts = s.match(/[A-Za-z]+|\d+|[^\x00-\x7F]+|[()[\],.ΔΓΘΛΤ＋+]/g) || [];
+    const out = parts.map(p => {
+        if (/^\d+$/.test(p) || /^[()[\],.ΔΓΘΛΤ＋+]$/.test(p)) return p;
+        if (/^[A-Za-z]+$/.test(p)) {
+            const low=p.toLowerCase();
+            if (_WORD_ZH[low]) return _WORD_ZH[low];
+            return _phoneticWord(p);
+        }
+        return p.replace(/[ぁ-んァ-ヶ]/g, ch => _kanaToZh[ch] || ch);
+    }).join("");
+    return (out || "未名") + plus;
+}
+
+const _kanaToZh = {
+"あ":"阿","い":"伊","う":"乌","え":"埃","お":"奥","か":"卡","き":"基","く":"库","け":"凯","こ":"科",
+"さ":"萨","し":"西","す":"苏","せ":"塞","そ":"索","た":"塔","ち":"奇","つ":"茨","て":"特","と":"托",
+"な":"娜","に":"妮","ぬ":"努","ね":"涅","の":"诺","は":"哈","ひ":"希","ふ":"芙","へ":"赫","ほ":"霍",
+"ま":"玛","み":"米","む":"穆","め":"梅","も":"莫","や":"亚","ゆ":"尤","よ":"约",
+"ら":"拉","り":"莉","る":"鲁","れ":"蕾","ろ":"罗","わ":"瓦","を":"沃","ん":"恩",
+"が":"加","ぎ":"吉","ぐ":"古","げ":"盖","ご":"戈","ざ":"扎","じ":"吉","ず":"兹","ぜ":"泽","ぞ":"佐",
+"だ":"达","ぢ":"吉","づ":"兹","で":"德","ど":"多","ば":"巴","び":"比","ぶ":"布","べ":"贝","ぼ":"波",
+"ぱ":"帕","ぴ":"皮","ぷ":"普","ぺ":"佩","ぽ":"波","ぁ":"阿","ぃ":"伊","ぅ":"乌","ぇ":"埃","ぉ":"奥",
+"ゃ":"亚","ゅ":"尤","ょ":"约","っ":"ッ","ー":""
+};
+for (const [k,v] of Object.entries(_kanaToZh)) {
+    const code=k.charCodeAt(0);
+    if (code>=0x30A1 && code<=0x30F6) _kanaToZh[String.fromCharCode(code-0x60)] = v;
+}
+
+const _oldItemName = item_name;
+const _oldUnitName = unit_name;
+const _oldClassName = class_name;
+const _oldSkillName = skill_name;
+
+function item_name(meta) {
+    const old = _oldItemName(meta);
+    if (old && old !== "未翻译道具") return old;
+    const en = _clean(meta && meta.en);
+    const jp = _clean(meta && meta.jp);
+    const source = en || jp || "无名道具";
+    return _translatePhrase(source);
+}
+
+function unit_name(meta) {
+    const name = String(meta && meta.name || "").trim();
+    if (!name) return "未知角色";
+    const known = CHARACTERS[name];
+    if (known) return known;
+    const clean = name.replace(/^EN_/, "").replace(/_/g, " ");
+    return _translatePhrase(clean, true);
+}
+
+function class_name(meta) {
+    const old = _oldClassName(meta);
+    if (old && old !== "未知兵种" && !/^[A-Za-z0-9 _()+-]+$/.test(old)) return old;
+    const en = String(meta && meta.en || "").trim();
+    const jp = String(meta && meta.jp || "").replace(/^JID_/, "").trim();
+    return _translatePhrase(en || jp || "未知职业");
+}
+
+function skill_name(meta) {
+    const old = _oldSkillName(meta);
+    if (old && old !== "未翻译技能" && !/^[A-Za-z0-9 _()+-]+$/.test(old)) return old;
+    const en = String(meta && meta.en || "").trim();
+    const jp = String(meta && meta.jp || "").replace(/^SID_/, "").trim();
+    return _translatePhrase(en || jp || "未知技能");
+}
