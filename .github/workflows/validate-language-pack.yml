@@ -1,0 +1,24 @@
+name: Validate external zh-CN language pack
+
+on:
+  push:
+    branches: [external-language-pack-v1.0]
+    paths:
+      - "language-pack/**"
+      - ".github/workflows/validate-language-pack.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile all Python modules
+        run: python -m py_compile language-pack/install_zh_cn.py language-pack/zh_CN/bootstrap.py language-pack/zh_CN/i18n_zh_cn.py language-pack/zh_CN/zh_cn_names.py
+      - name: Check installer CLI
+        run: python language-pack/install_zh_cn.py --help
+      - name: Check language pack metadata
+        run: python -c "import json; d=json.load(open('language-pack/version.json', encoding='utf-8')); assert d['locale']=='zh-CN' and d['version'].startswith('1.0')"
