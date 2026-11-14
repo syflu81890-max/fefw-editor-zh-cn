@@ -1,48 +1,53 @@
 # FEFW Save Editor 简体中文外置语言包 v1.0（实验版）
 
-本包将现有简体中文界面翻译、角色/道具/职业/技能名称映射从编辑器源码主体中分离，作为独立目录加载。
+本包把简体中文界面翻译及角色/道具/职业/技能名称翻译独立保存，尽量避免每次官方更新都重做整套汉化。
 
-## 重要限制
+## 重要限制（请先看）
 
-- **适用对象：官方 source.zip 源码版**，不是官方 Windows 预编译 EXE。
-- 官方 Windows ZIP 是 PyInstaller 打包程序，没有官方语言插件接口；把本语言包直接放在 EXE 旁边不会生效。
-- 本安装器只对源码目录的启动入口做一个小型加载补丁，并在旁边保存备份；不修改存档格式、字段、ID 或写入逻辑。
-- 需要 Python 3.10+，并按官方 README 安装 requirements.txt。
-- 这是首个实验版，尚未完成所有系统/版本的实机 GUI 验证。安装前请保留官方源码 ZIP。
+**本包目前适用于官方 source.zip 源码版，不支持直接汉化官方 Windows EXE。**
 
-## 安装
+官方 Windows 版使用 PyInstaller `--onefile` 打包，程序模块封装在单文件内部，没有外部语言插件接口。单独把语言包放在 EXE 旁边不会生效。直接拆包/重打包官方 EXE 也有兼容性和安全风险，因此本包不做这种操作。
 
-1. 从官方 Release 下载 `FEFW-Save-Editor-v1.3.6-source.zip` 并解压。
-2. 将本语言包 ZIP 解压到单独文件夹。
-3. 在命令提示符中运行：
+## 准备
 
-```bat
-python install_zh_cn.py --target "D:\路径\FEFW-Save-Editor"
-```
+1. 下载官方 [v1.3.6 Release](https://github.com/Antiadvocate/fefw-editor/releases/tag/v1.3.6) 中的 `FEFW-Save-Editor-v1.3.6-source.zip` 并解压。
+2. Windows 安装 Python 3.10 或更高版本，并确保安装时启用了 Python Launcher（`py` 命令）。
+3. 解压本语言包 ZIP。
 
-4. 进入官方源码目录，运行 `FEFW Save Editor.bat`。
+## 安装（尽量一键）
 
-安装器会创建 `editor.py.zhcn-backup`，并把语言模块复制到源码目录的 `zh_CN` 子目录。
+双击本包中的 `安装汉化.bat`，输入包含 `editor.py` 的官方源码目录完整路径。安装器会：
+
+- 先备份原始 `editor.py` 为 `editor.py.zhcn-backup`
+- 复制独立的 `zh_CN` 语言模块
+- 在官方源码启动入口加入很小的加载补丁
+- 生成 `启动简体中文.bat`
+
+以后双击源码目录里的 `启动简体中文.bat` 启动。首次启动若缺少 `zstandard`，启动器会尝试通过 pip 安装官方 requirements 中的依赖。
 
 ## 卸载
 
+在命令提示符中运行：
+
 ```bat
-python install_zh_cn.py --target "D:\路径\FEFW-Save-Editor" --uninstall
+py -3 install_zh_cn.py --target "D:\路径\FEFW-Save-Editor" --uninstall
 ```
 
-## 更新官方版本
+注意：卸载命令中的 `install_zh_cn.py` 是本语言包目录里的安装器路径。卸载会恢复备份的 `editor.py` 并删除 `zh_CN` 目录及启动器。
 
-官方更新后，重新解压新的 source.zip 到一个干净目录，再对新目录运行本安装器即可。翻译资料不需要重新制作；如果上游重构启动代码或数据接口，安装器/兼容层可能需要更新。
+## 官方版本更新
 
-## 目前包含
+不要把新版本源码覆盖在旧目录上。每次官方更新时：
 
-- 界面简体中文
-- 角色名称中文映射与自动音译 fallback
-- 道具名称中文映射与自动翻译/音译 fallback
-- 职业名称中文映射
-- 技能名称翻译
-- 保留日文原始名称用于识别，不修改存档数据
+1. 下载新的官方 source.zip，解压到一个全新文件夹。
+2. 对新文件夹再次运行本语言包的 `安装汉化.bat`。
+3. 翻译数据仍然沿用原来的语言包；如果上游改了程序入口或内部数据接口，可能需要更新加载兼容层。
 
-## 安全提示
+这比每次重新合并所有汉化代码轻得多，但**不是对所有未来版本都保证零修改**。
 
-本包提供 Python 源码，不包含 EXE，也不要求关闭 Windows Defender 或绕过安全提示。建议只从官方仓库下载原版源码和本语言包。
+## 安全与存档
+
+- 本包只有可读 Python 源码和 JSON 翻译数据，不含 EXE。
+- 不要求关闭 Defender 或绕过 SmartScreen。
+- 翻译只影响界面显示，不应改写存档 ID 或数据；实际使用仍请先备份存档。
+- 首版属于实验版，尚未在你的 Windows 环境完成完整 GUI 实机验证。
