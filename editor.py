@@ -38,9 +38,10 @@ from i18n_zh_cn import install as _install_zh_cn, tr as _tr_zh_cn  # noqa: E402
 _install_zh_cn()
 import fefw_core as core  # noqa: E402  (save object tree: resizing edits)
 from editor_advanced import AdvancedMixin  # noqa: E402  (Player / Classes / Flags pages)
+from ui_util import enable_multi_select, last_tree  # noqa: E402  (Ctrl+A / Shift+drag in tables)
 
 APP_NAME = "Fortune's Weave Save Editor"
-__version__ = "1.3.2"
+__version__ = "1.3.4"
 SETTINGS_PATH = os.path.join(USER_DIR, "editor_settings.json")
 ICON_DIR = os.path.join(USER_DIR, "icons")
 
@@ -127,7 +128,7 @@ class SearchEntry(ttk.Entry):
     def __init__(self, master, placeholder: str, on_change, delay: int = 140, **kw):
         self._var = tk.StringVar()
         super().__init__(master, textvariable=self._var, **kw)
-        self._ph = _tr_zh_cn(placeholder)
+        self._ph = placeholder
         self._on_change = on_change
         self._delay = delay
         self._job = None
@@ -239,6 +240,7 @@ def scrolled_tree(master, **kw) -> ttk.Treeview:
     tree.pack(side="left", fill="both", expand=True)
     sb.pack(side="right", fill="y")
     tree.container = frame
+    enable_multi_select(tree)
     return tree
 
 
@@ -797,7 +799,7 @@ class App(AdvancedMixin, tk.Tk):
         for iid, meta in item_ids().items():
             en = item_label(iid, meta)
             jp = meta.get("jp") or ""
-            blob = f"{en} {meta.get('en', '')} {jp} {iid:08x}".lower()
+            blob = f"{en} {jp} {iid:08x}".lower()
             rows.append((iid, meta, en, jp, item_kind(meta), item_category(meta),
                          is_shadow(meta), blob))
         rows.sort(key=lambda r: (r[2].lower(), r[0]))
@@ -885,7 +887,25 @@ class App(AdvancedMixin, tk.Tk):
         self._build_flags()
         self._build_mounts()
         self._style_trees()
+        self._enable_multi_select_all()
         self._update_dirty()
+
+    def _enable_multi_select_all(self):
+        """Ctrl+A / Shift+drag on every list except the two row-pickers.
+
+        The unit lists drive the edit form, so they stay single-choice; every
+        other table (convoy, classes, masteries, flags, mounts) takes a range.
+        """
+        skip = {id(getattr(self, "unit_tree", None)),
+                id(getattr(self, "cls_unit_tree", None))}
+
+        def walk(w):
+            for child in w.winfo_children():
+                if isinstance(child, ttk.Treeview) and id(child) not in skip:
+                    enable_multi_select(child)
+                walk(child)
+
+        walk(self)
 
     # -------------------------------------------------------- units page
     def _build_units(self):
@@ -1503,11 +1523,25 @@ class App(AdvancedMixin, tk.Tk):
         self.bind_all("<Control-s>", lambda e: self.save_all())
         self.bind_all("<Control-o>", lambda e: self.open_dialog())
         self.bind_all("<Control-f>", self._focus_search)
+        self.bind_all("<Control-a>", self._select_all_focused)
         self.bind_all("<F5>", lambda e: self.reload())
         self.bind_all("<Control-z>", lambda e: (self.undo(), "break")[1])
         self.bind_all("<Control-y>", lambda e: (self.redo(), "break")[1])
         self.bind("<FocusIn>", lambda e: self.after_idle(self._check_disk)
                   if e.widget is self else None)
+
+    def _select_all_focused(self, _e=None):
+        """Ctrl+A in a table selects every row; elsewhere it stays normal."""
+        w = self.focus_get()
+        if not isinstance(w, ttk.Treeview):
+            w = last_tree()
+        if isinstance(w, ttk.Treeview):
+            rows = w.get_children("")
+            if rows:
+                w.selection_set(rows)
+                w.focus(rows[-1])
+            return "break"
+        return None
 
     def _focus_search(self, _e=None):
         """Ctrl+F jumps to the search box of whatever page is showing."""
