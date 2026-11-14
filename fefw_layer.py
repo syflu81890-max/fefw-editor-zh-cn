@@ -209,7 +209,7 @@ def _skills() -> dict:
 
 
 def skill_label(sid: int) -> str:
-    """Simplified Chinese display label; source identifiers remain unchanged."""
+    """Simplified Chinese display label; source identifiers remain untouched."""
     meta = item_ids().get(sid & 0xFFFFFFFF)
     if meta:
         return item_label(sid, meta)
