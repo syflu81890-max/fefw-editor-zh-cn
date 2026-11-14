@@ -133,6 +133,18 @@ _TRANSLATIONS = {
     "Include monster / internal classes":"包含怪物／内部职业",
     "All types":"所有类型","Normal":"普通","Hard":"困难","Maddening":"疯狂",
     "Casual":"休闲","Classic":"经典",
+    "Class exp":"职业经验",
+    "Class exp for the selected classes (0 – 255):":"所选职业的职业经验（0–255）：",
+    "Class exp saved with this class (0 – 255):":"此职业记录的职业经验（0–255）：",
+    "Pick a class row first.":"请先选择一个职业条目。",
+    "slots disagree — ":"各存档槽位设置不一致 — ",
+    "every slot: ":"所有存档槽位：",
+    "Couldn't apply difficulty/mode":"无法应用难度／模式设置",
+    "Set difficulty/mode":"设置难度／模式",
+    "Removed class ":"已移除职业：",
+    "classes' exp → ":"个职业的职业经验 → ",
+    "masteries' exp → ":"项熟练度经验 → ",
+    "slots":"存档槽位",
 }
 # Longer phrases are translated first; remaining exact/embedded English fragments
 # are deliberately limited to presentation text.
