@@ -3,7 +3,7 @@ name: Package external zh-CN language pack
 on:
   workflow_dispatch:
   push:
-    branches: [external-language-pack-v1.0]
+    branches: [external-language-pack-v1.0.1]
     paths:
       - "language-pack/**"
       - ".github/workflows/package-language-pack.yml"
@@ -22,7 +22,7 @@ jobs:
           from pathlib import Path
           from zipfile import ZipFile, ZIP_DEFLATED
           root = Path("language-pack")
-          output = Path("FEFW-zh-CN-language-pack-v1.0.zip")
+          output = Path("FEFW-zh-CN-language-pack-v1.0.1.zip")
           with ZipFile(output, "w", ZIP_DEFLATED) as z:
               for p in root.rglob("*"):
                   if p.is_file():
@@ -31,7 +31,7 @@ jobs:
           PY
       - uses: actions/upload-artifact@v4
         with:
-          name: FEFW-zh-CN-language-pack-v1.0
-          path: FEFW-zh-CN-language-pack-v1.0.zip
+          name: FEFW-zh-CN-language-pack-v1.0.1
+          path: FEFW-zh-CN-language-pack-v1.0.1.zip
           if-no-files-found: error
           retention-days: 90
