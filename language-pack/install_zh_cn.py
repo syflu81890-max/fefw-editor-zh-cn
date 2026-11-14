@@ -35,7 +35,21 @@ def install(target: Path, pack_dir: Path):
     shutil.copy2(editor, backup)
     editor.write_text(source.replace(anchor, patch, 1), encoding="utf-8")
     print("安装完成。备份文件：", backup.name)
-    print("请在此源码目录运行 FEFW Save Editor.bat。")
+    launcher = target / "启动简体中文.bat"
+    launcher.write_text(
+        '@echo off\r\n'
+        'cd /d "%~dp0"\r\n'
+        'py -3 -c "import zstandard" >nul 2>&1\r\n'
+        'if errorlevel 1 (\r\n'
+        '  echo 正在安装编辑器所需依赖 zstandard...\r\n'
+        '  py -3 -m pip install --only-binary=:all: -r requirements.txt\r\n'
+        '  if errorlevel 1 (echo 依赖安装失败，请检查 Python 和网络。 & pause & exit /b 1)\r\n'
+        ')\r\n'
+        'py -3 editor.py\r\n'
+        'if errorlevel 1 pause\r\n',
+        encoding="utf-8"
+    )
+    print("已创建启动简体中文.bat；双击即可启动。")
 
 def uninstall(target: Path):
     editor = target / "editor.py"
@@ -45,6 +59,7 @@ def uninstall(target: Path):
     shutil.copy2(backup, editor)
     backup.unlink()
     shutil.rmtree(target / "zh_CN", ignore_errors=True)
+    (target / "启动简体中文.bat").unlink(missing_ok=True)
     print("外置汉化包已卸载，官方源码已恢复。")
 
 def main():
