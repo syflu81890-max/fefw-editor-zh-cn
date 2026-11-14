@@ -754,23 +754,22 @@ def _parse_record(payload: bytes, o: int, uid: int, meta: dict) -> UnitRecord | 
 # --------------------------------------------------------------------------
 # a whole save folder (Auto + every Chapter_* slot)
 # --------------------------------------------------------------------------
-SLOT_PREFIXES = ("Auto", "Chapter_", "Route_")
+SLOT_PREFIXES = ("Auto", "Chapter_", "Route_", "Part_")
 
 
 def is_slot_name(name: str) -> bool:
     """Slot files have no extension and never start with 'Auto.' etc."""
     if "." in name:
         return False
-    return name == "Auto" or name.startswith(("Chapter_", "Route_"))
+    return name == "Auto" or name.startswith(("Chapter_", "Route_", "Part_"))
 
 
 class SaveSet:
     """Every slot in one save folder, edited together.
 
-    Slots: Auto, Chapter_<map>_<x>_<y> (battle state) and Route_<lord> (route /
-    hub progress). The party lives in the Chapter_* and Route_* slots, so all of
-    them have to carry the same edit.
-    """
+    Slots: Auto, Chapter_<map>_<x>_<y> (battle state), Route_<lord> (route /
+    hub progress) and Part_<lord>_<part> (part checkpoint). The party lives in
+    the Chapter_* and Route_* slots, so all of them have to carry the same edit."""
 
     def __init__(self, folder: str):
         self.folder = folder
@@ -1030,10 +1029,6 @@ def item_label(iid: int, meta: dict | None = None) -> str:
     if not meta:
         return f"未知道具 {iid:08x}"
     return zh_names.item_name(meta)
-
-
-_CJK = re.compile(r"[\u3040-\u30ff\u3400-\u9fff]")
-_CLEAN: dict[str, str] | None = None
 
 
 def _clean_names() -> dict[str, str]:
