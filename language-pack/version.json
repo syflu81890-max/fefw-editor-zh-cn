@@ -1,0 +1,9 @@
+{
+  "name": "FEFW Save Editor 简体中文外置语言包",
+  "version": "1.0.0-experimental",
+  "locale": "zh-CN",
+  "upstream": "1.3.6",
+  "supported_target": "official-source-zip",
+  "tested": false,
+  "notes": "首个实验版；不支持官方 PyInstaller Windows EXE 直接挂载。"
+}
